@@ -69,9 +69,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Impossible d\'extraire le texte corrigé de la réponse de l\'API.' }, { status: 500 });
     }
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Erreur dans /api/correct (hors appel Gemini):', error);
-    const errorMessage = error instanceof Error ? error.message : 'Une erreur inconnue est survenue lors du traitement de votre requête.';
+    let errorMessage = 'Une erreur inconnue est survenue lors du traitement de votre requête.';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

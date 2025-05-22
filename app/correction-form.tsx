@@ -43,8 +43,14 @@ export default function CorrectionForm() {
       }
 
       setCorrectedText(data.correctedText);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) { 
+      if (err instanceof Error) {
+        setError(err.message);
+      } else if (typeof err === 'string') {
+        setError(err);
+      } else {
+        setError("Une erreur inattendue est survenue.");
+      }
     } finally {
       setIsLoading(false);
     }
