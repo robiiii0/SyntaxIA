@@ -1,12 +1,17 @@
 // app/correction-form.tsx
 "use client";
 
-import { useState, ChangeEvent, FormEvent } from 'react';
-import { SparklesIcon, DocumentDuplicateIcon, ClipboardDocumentCheckIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { useState, ChangeEvent, FormEvent } from "react";
+import {
+  SparklesIcon,
+  DocumentDuplicateIcon,
+  ClipboardDocumentCheckIcon,
+  ExclamationTriangleIcon,
+} from "@heroicons/react/24/outline";
 
 export default function CorrectionForm() {
-  const [inputText, setInputText] = useState<string>('');
-  const [correctedText, setCorrectedText] = useState<string>('');
+  const [inputText, setInputText] = useState<string>("");
+  const [correctedText, setCorrectedText] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState<boolean>(false);
@@ -24,14 +29,14 @@ export default function CorrectionForm() {
 
     setIsLoading(true);
     setError(null);
-    setCorrectedText('');
+    setCorrectedText("");
     setIsCopied(false);
 
     try {
-      const response = await fetch('/api/correct', {
-        method: 'POST',
+      const response = await fetch("/api/correct", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ textToCorrect: inputText }),
       });
@@ -39,14 +44,16 @@ export default function CorrectionForm() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Une erreur est survenue lors de la correction.");
+        throw new Error(
+          data.error || "Une erreur est survenue lors de la correction."
+        );
       }
 
       setCorrectedText(data.correctedText);
-    } catch (err: unknown) { 
+    } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
-      } else if (typeof err === 'string') {
+      } else if (typeof err === "string") {
         setError(err);
       } else {
         setError("Une erreur inattendue est survenue.");
@@ -58,12 +65,13 @@ export default function CorrectionForm() {
 
   const handleCopy = () => {
     if (!correctedText) return;
-    navigator.clipboard.writeText(correctedText)
+    navigator.clipboard
+      .writeText(correctedText)
       .then(() => {
         setIsCopied(true);
         setTimeout(() => setIsCopied(false), 2000);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("Failed to copy text: ", err);
         setError("Impossible de copier le texte.");
       });
@@ -82,7 +90,10 @@ export default function CorrectionForm() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="inputText" className="block text-sm font-medium text-slate-300 mb-1">
+          <label
+            htmlFor="inputText"
+            className="block text-sm font-medium text-slate-300 mb-1"
+          >
             Texte à analyser :
           </label>
           <textarea
@@ -103,9 +114,25 @@ export default function CorrectionForm() {
         >
           {isLoading ? (
             <>
-              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <svg
+                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
               </svg>
               Analyse en cours...
             </>
@@ -128,11 +155,17 @@ export default function CorrectionForm() {
       {correctedText && (
         <div className="mt-8 pt-6 border-t border-slate-700">
           <div className="flex justify-between items-center mb-2">
-            <h2 className="text-xl font-semibold text-slate-200">Texte Corrigé :</h2>
+            <h2 className="text-xl font-semibold text-slate-200">
+              Texte Corrigé :
+            </h2>
             <button
               onClick={handleCopy}
               title="Copier le texte corrigé"
-              className={`p-2 rounded-md ${isCopied ? 'bg-green-600 hover:bg-green-700' : 'bg-slate-600 hover:bg-slate-500'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-sky-500 transition-all duration-300 group`}
+              className={`p-2 rounded-md ${
+                isCopied
+                  ? "bg-green-600 hover:bg-green-700"
+                  : "bg-slate-600 hover:bg-slate-500"
+              } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-sky-500 transition-all duration-300 group`}
             >
               {isCopied ? (
                 <ClipboardDocumentCheckIcon className="h-5 w-5 text-white transform group-hover:scale-110 transition-transform" />
@@ -145,7 +178,9 @@ export default function CorrectionForm() {
             {correctedText}
           </div>
           {isCopied && (
-              <p className="text-sm text-green-400 mt-2 text-right transition-opacity duration-300">Copié dans le presse-papiers !</p>
+            <p className="text-sm text-green-400 mt-2 text-right transition-opacity duration-300">
+              Copié dans le presse-papiers !
+            </p>
           )}
         </div>
       )}
